@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle do Quarto</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      text-align: center;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 280px;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .switch-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px 0;
+      padding: 0 20px;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 24px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #4CAF50;
+    }
+    input:checked + .slider:before {
+      transform: translateX(16px);
+    }
+    .label {
+      font-size: 16px;
+      width: 100px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Controle do Quarto</h2>
+
+    <div class="switch-container">
+      <span class="label">Luz 16</span>
+      <label class="switch">
+        <input type="checkbox" id="luz-switch" onclick="toggleRelay('luz', this.checked)">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="switch-container">
+      <span class="label">PC 5</span>
+      <label class="switch">
+        <input type="checkbox" id="pc-switch" onclick="toggleRelay('pc', this.checked)">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="switch-container">
+      <span class="label">Ventilador 4</span>
+      <label class="switch">
+        <input type="checkbox" id="ventilador-switch" onclick="toggleRelay('ventilador', this.checked)">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="switch-container">
+      <span class="label">Outro 0</span>
+      <label class="switch">
+        <input type="checkbox" id="outro-switch" onclick="toggleRelay('outro', this.checked)">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <script>
+    function toggleRelay(device, state) {
+      const pinMap = {
+        'luz': 16,
+        'pc': 5,
+        'ventilador': 4,
+        'outro': 0
+      };
+
+      const pinValue = pinMap[device];
+      const pinState = state ? "LOW" : "HIGH";
+
+      const jsonData = JSON.stringify({
+        pinValue: pinValue,
+        pinState: pinState
+      });
+
+      const url = window.location.origin + '/control';
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: jsonData
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error('Error:', error));
+    }
+  </script>
+</body>
+</html>
